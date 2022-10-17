@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <style>
+   .wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 20px;
+    }
+
+    .wrapper button:not(:last-child) {
+    margin-right: 20px;
+    }
+  </style>
+    <title>TODO list</title>
+</head>
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
+        <a class="navbar-brand" th:href="@{/index}">
+            TODO list
+        </a>
+</div>
+<div class="container">
+    <h4 th:text="${task.name}" align="center"></h4>
+    <div class="row">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col" class="text-center">Description</th>
+                <th scope="col" class="text-center">Created</th>
+                <th scope="col" class="text-center">Done</th>
+            </tr>
+            </thead>
+            <tbody>
+            <td th:text="${task.description}" class="text-center"/>
+            <td th:text="${#temporals.format(task.created, 'dd-MM-yyyy HH:mm')}" class="text-center"/>
+            <td th:text="${task.done}" class="text-center"/>
+            </tbody>
+        </table>
+    </div>
+    <div class="wrapper">
+        <form th:action="@{|/complete/${task.id}|}" method="GET" enctype="multipart/form-data">
+            <button type="submit" th:if="${!task.done}" class="btn btn-primary">Complete</button>
+        </form>
+        <form th:action="@{|/update/${task.id}|}" method="GET" enctype="multipart/form-data">
+            <button type="submit" th:if="${!task.done}" class="btn btn-primary">Update</button>
+        </form>
+        <form th:action="@{|/delete/${task.id}|}" method="GET" enctype="multipart/form-data">
+            <button type="submit" class="btn btn-primary">Delete</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

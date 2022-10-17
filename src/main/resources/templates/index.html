@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+    .wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 20px;
+    }
+
+    .wrapper button:not(:last-child) {
+    margin-right: 20px;
+    }
+    </style>
+    <title>TODO list</title>
+</head>
+<body>
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
+        <a class="navbar-brand" th:href="@{/index}">
+            TODO list
+        </a>
+    </nav>
+</div>
+<div class="container">
+    <div class="wrapper">
+        <span class="text-center">
+            <a th:href="@{/index}" class="btn btn-primary disabled" th:if="${ALL != 'false'}" tabindex="-1" role="button" aria-disabled="true">All</a>
+            <a th:href="@{/index}" class="btn btn-primary" th:if="${ALL != 'true'}" role="button" aria-pressed="true">All</a>
+            <a th:href="@{/CompletedTasksList}" class="btn btn-primary disabled" th:if="${COMPLETE != 'false'}" tabindex="-1" role="button" aria-disabled="true">Completed</a>
+            <a th:href="@{/CompletedTasksList}" class="btn btn-primary" th:if="${COMPLETE != 'true'}" role="button" aria-pressed="true">Completed</a>
+            <a th:href="@{/NewTasksList}" class="btn btn-primary disabled" th:if="${NEWTask != 'false'}" tabindex="-1" role="button" aria-disabled="true">New</a>
+            <a th:href="@{/NewTasksList}" class="btn btn-primary" th:if="${NEWTask != 'true'}" role="button" aria-pressed="true">New</a>
+        </span>
+    </div>
+    <div class="wrapper">
+        <form th:action="@{/addTask}" method="GET" enctype="multipart/form-data">
+            <button type="submit" class="btn btn-primary">Add task</button>
+        </form>
+    </div>
+    <span class="text-center">
+        <h3 th:if="${ALL != 'false'}">All tasks</h3>
+        <h3 th:if="${COMPLETE != 'false'}">Completed tasks</h3>
+        <h3 th:if="${NEWTask != 'false'}">New tasks</h3>
+    </span>
+<div class="row">
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col" class="text-center">#</th>
+            <th scope="col" class="text-center">Name</th>
+            <th scope="col" class="text-center">Created</th>
+            <th scope="col" class="text-center">Done</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="task: ${tasks}">
+            <td th:text="${task.id}" class="text-center"></td>
+            <td class="text-center">
+                <a th:href="@{|/task/${task.id}|}" th:text="${task.name}" class="card-link"></a>
+            </td>
+            <td th:text="${#temporals.format(task.created, 'dd-MM-yyyy HH:mm')}" class="text-center"/>
+            <td th:text="${task.done}" class="text-center"/>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</div>
+</body>
+</html>

@@ -32,15 +32,15 @@ public class TaskService {
         return taskStore.findById(taskId);
     }
 
-    public Task complete(int taskId) {
+    public boolean complete(int taskId) {
         return taskStore.complete(taskId);
     }
 
-    public Task update(Task task) {
+    public boolean update(Task task) {
         return taskStore.update(task);
     }
 
-    public void delete(int taskId) {
-        taskStore.delete(taskId);
+    public boolean delete(int taskId) {
+        return taskStore.delete(taskId);
     }
 }

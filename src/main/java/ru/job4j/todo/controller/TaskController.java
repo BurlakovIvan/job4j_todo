@@ -18,15 +18,6 @@ public class TaskController {
 
     public TaskService taskService;
 
-    @GetMapping("/index")
-    public String tasks(Model model) {
-        model.addAttribute("tasks", taskService.findAll());
-        model.addAttribute("ALL", "true");
-        model.addAttribute("COMPLETE", "false");
-        model.addAttribute("NEWTask", "false");
-        return "index";
-    }
-
     @GetMapping("/addTask")
     public String addTask(Model model) {
         model.addAttribute("task",
@@ -37,12 +28,11 @@ public class TaskController {
     @PostMapping("/createTask")
     public String createTask(@ModelAttribute Task task) {
         task.setCreated(LocalDateTime.now());
-        task.setDone(false);
         taskService.add(task);
         return "redirect:/index";
     }
 
-    @GetMapping("/CompletedTasksList")
+    @GetMapping("/completedTasksList")
     public String completedTasksList(Model model) {
         model.addAttribute("tasks", taskService.findCompleted());
         model.addAttribute("ALL", "false");
@@ -51,7 +41,7 @@ public class TaskController {
         return "index";
     }
 
-    @GetMapping("/NewTasksList")
+    @GetMapping("/newTasksList")
     public String newTasksList(Model model) {
         model.addAttribute("tasks", taskService.findNew());
         model.addAttribute("ALL", "false");
@@ -68,8 +58,12 @@ public class TaskController {
 
     @GetMapping("/complete/{taskID}")
     public String complete(Model model, @PathVariable("taskID") int taskID) {
-        model.addAttribute("task", taskService.complete(taskID));
-        return "task";
+        var rsl = taskService.complete(taskID);
+        if (rsl) {
+            return String.format("redirect:/task/%s", taskID);
+        }
+        model.addAttribute("message", "ERROR");
+        return "condition";
     }
 
     @GetMapping("/update/{taskID}")
@@ -80,13 +74,17 @@ public class TaskController {
 
     @PostMapping("/updateTask")
     public String updateTask(Model model, @ModelAttribute Task task) {
-        model.addAttribute("task", taskService.update(task));
-        return "task";
+        var rsl = taskService.update(task);
+        if (rsl) {
+            return String.format("redirect:/task/%s", task.getId());
+        }
+        model.addAttribute("message", "ERROR");
+        return "condition";
     }
 
     @GetMapping("/delete/{taskID}")
-    public String delete(@PathVariable("taskID") int taskID) {
-        taskService.delete(taskID);
-        return "redirect:/index";
+    public String delete(Model model, @PathVariable("taskID") int taskID) {
+        model.addAttribute("message", taskService.delete(taskID) ? "SUCCESS" : "Failed to delete task");
+        return "condition";
     }
 }

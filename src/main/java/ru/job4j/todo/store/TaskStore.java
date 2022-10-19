@@ -67,12 +67,11 @@ public class TaskStore {
         Session session = sf.openSession();
         try {
             session.beginTransaction();
-            session.createQuery(UPDATE_COMPLETE)
+            rsl = session.createQuery(UPDATE_COMPLETE)
                     .setParameter("fDone", true)
                     .setParameter("fId", taskId)
-                    .executeUpdate();
+                    .executeUpdate() > 0;
             session.getTransaction().commit();
-            rsl = true;
         } catch (Exception e) {
             session.getTransaction().rollback();
         }
@@ -84,13 +83,12 @@ public class TaskStore {
         Session session = sf.openSession();
         try {
             session.beginTransaction();
-            session.createQuery(UPDATE_NAME)
+            rsl = session.createQuery(UPDATE_NAME)
                     .setParameter("fName", task.getName())
                     .setParameter("fDescription", task.getDescription())
                     .setParameter("fId", task.getId())
-                    .executeUpdate();
+                    .executeUpdate() > 0;
             session.getTransaction().commit();
-            rsl = true;
         } catch (Exception e) {
             session.getTransaction().rollback();
         }
@@ -102,11 +100,10 @@ public class TaskStore {
         Session session = sf.openSession();
         try {
             session.beginTransaction();
-            session.createQuery(DELETE)
+            rsl = session.createQuery(DELETE)
                     .setParameter("fId", taskId)
-                    .executeUpdate();
+                    .executeUpdate() > 0;
             session.getTransaction().commit();
-            rsl = true;
         } catch (Exception e) {
             session.getTransaction().rollback();
         }

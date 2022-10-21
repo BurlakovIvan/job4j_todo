@@ -2,18 +2,17 @@ package ru.job4j.todo.store;
 
 import lombok.AllArgsConstructor;
 import net.jcip.annotations.ThreadSafe;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 import ru.job4j.todo.model.Task;
 
 import java.util.List;
+import java.util.Map;
 
 @ThreadSafe
 @Repository
 @AllArgsConstructor
 public class TaskStore {
-    private final SessionFactory sf;
+    private final CrudRepository crudRepository;
 
     private final static String SELECT = "SELECT t FROM Task t";
     private final static String UPDATE = "UPDATE Task %s WHERE id = :fId";
@@ -27,11 +26,7 @@ public class TaskStore {
                                                        """);
 
     public void add(Task task) {
-        Session session = sf.openSession();
-        session.beginTransaction();
-        session.save(task);
-        session.getTransaction().commit();
-        session.close();
+        crudRepository.run(session -> session.save(task));
     }
 
     public List<Task> findAll() {
@@ -47,67 +42,44 @@ public class TaskStore {
     }
 
     public Task findById(int taskId) {
-        Session session = sf.openSession();
-        session.beginTransaction();
-        var result = session.get(Task.class, taskId);
-        session.getTransaction().commit();
-        session.close();
-        return result;
+        return crudRepository.tx(session -> session.get(Task.class, taskId));
     }
 
     public List<Task> find(String query) {
-        Session session = sf.openSession();
-        session.beginTransaction();
-        var result = session.createQuery(query, Task.class).getResultList();
-        session.getTransaction().commit();
-        session.close();
-        return result;
+        return crudRepository.query(query, Task.class);
     }
 
     public boolean complete(int taskId) {
-        var rsl = false;
-        Session session = sf.openSession();
+        boolean rsl = true;
         try {
-            session.beginTransaction();
-            rsl = session.createQuery(UPDATE_COMPLETE)
-                    .setParameter("fDone", true)
-                    .setParameter("fId", taskId)
-                    .executeUpdate() > 0;
-            session.getTransaction().commit();
+            crudRepository.run(UPDATE_COMPLETE,
+                    Map.of("fDone", true,
+                            "fId", taskId));
         } catch (Exception e) {
-            session.getTransaction().rollback();
+            rsl = false;
         }
         return rsl;
     }
 
     public boolean update(Task task) {
-        var rsl = false;
-        Session session = sf.openSession();
+        boolean rsl = true;
         try {
-            session.beginTransaction();
-            rsl = session.createQuery(UPDATE_NAME)
-                    .setParameter("fName", task.getName())
-                    .setParameter("fDescription", task.getDescription())
-                    .setParameter("fId", task.getId())
-                    .executeUpdate() > 0;
-            session.getTransaction().commit();
+            crudRepository.run(UPDATE_NAME,
+                    Map.of("fName", task.getName(),
+                            "fDescription", task.getDescription(),
+                            "fId", task.getId()));
         } catch (Exception e) {
-            session.getTransaction().rollback();
+            rsl = false;
         }
         return rsl;
     }
 
     public boolean delete(int taskId) {
-        var rsl = false;
-        Session session = sf.openSession();
+        boolean rsl = true;
         try {
-            session.beginTransaction();
-            rsl = session.createQuery(DELETE)
-                    .setParameter("fId", taskId)
-                    .executeUpdate() > 0;
-            session.getTransaction().commit();
+            crudRepository.run(DELETE, Map.of("fId", taskId));
         } catch (Exception e) {
-            session.getTransaction().rollback();
+            rsl = false;
         }
         return rsl;
     }

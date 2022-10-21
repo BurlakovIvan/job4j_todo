@@ -2,11 +2,10 @@ package ru.job4j.todo.store;
 
 import lombok.AllArgsConstructor;
 import net.jcip.annotations.ThreadSafe;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 import ru.job4j.todo.model.User;
 
+import java.util.Map;
 import java.util.Optional;
 
 @ThreadSafe
@@ -14,7 +13,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class UserStore {
 
-    private final SessionFactory sf;
+    private final CrudRepository crudRepository;
 
     private final static String SELECT = """
                                          Select b FROM User AS b
@@ -22,30 +21,21 @@ public class UserStore {
                                          """;
 
     public boolean add(User user) {
-        Session session = sf.openSession();
-        var rsl = false;
+        boolean rsl = true;
         try {
-            session.beginTransaction();
-            session.save(user);
-            session.getTransaction().commit();
-            session.close();
-            rsl = true;
+            crudRepository.run(session -> session.save(user));
         } catch (Exception e) {
-            session.getTransaction().rollback();
+            rsl = false;
         }
         return rsl;
     }
 
     public Optional<User> findUserByLoginAndPwd(String login, String password) {
-        Session session = sf.openSession();
-        session.beginTransaction();
-        Optional<User> rsl = session.createQuery(SELECT, User.class)
-                .setParameter("fLogin", login)
-                .setParameter("fPassword", password)
-                .uniqueResultOptional();
-        session.getTransaction().commit();
-        session.close();
-        return rsl;
+        return crudRepository.optional(
+                SELECT, User.class,
+                Map.of("fLogin", login,
+                        "fPassword", password)
+        );
     }
 
 }

@@ -39,14 +39,10 @@ public class UserStore {
     public Optional<User> findUserByLoginAndPwd(String login, String password) {
         Session session = sf.openSession();
         session.beginTransaction();
-        Optional<User> rsl = Optional.empty();
-        var userList = session.createQuery(SELECT, User.class)
+        Optional<User> rsl = session.createQuery(SELECT, User.class)
                 .setParameter("fLogin", login)
                 .setParameter("fPassword", password)
-                .list();
-        if (!userList.isEmpty()) {
-            rsl = Optional.of(userList.get(0));
-        }
+                .uniqueResultOptional();
         session.getTransaction().commit();
         session.close();
         return rsl;

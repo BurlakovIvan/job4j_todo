@@ -5,3 +5,5 @@ CREATE TABLE if not exists tasks (
    created TIMESTAMP NOT NULL,
    done BOOLEAN
 );
+
+ALTER TABLE tasks ADD user_id INT REFERENCES users(id)

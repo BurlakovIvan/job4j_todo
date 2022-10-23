@@ -3,6 +3,7 @@ package ru.job4j.todo.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.job4j.todo.model.Task;
+import ru.job4j.todo.model.User;
 import ru.job4j.todo.store.TaskStore;
 
 import java.util.List;
@@ -16,16 +17,16 @@ public class TaskService {
         taskStore.add(task);
     }
 
-    public List<Task> findAll() {
-        return taskStore.findAll();
+    public List<Task> findAll(User user) {
+        return taskStore.findAll(user);
     }
 
-    public List<Task> findCompleted() {
-        return taskStore.findCompleted();
+    public List<Task> findCompleted(User user) {
+        return taskStore.findCompleted(user);
     }
 
-    public List<Task> findNew() {
-        return taskStore.findNew();
+    public List<Task> findNew(User user) {
+        return taskStore.findNew(user);
     }
 
     public Task findById(int taskId) {

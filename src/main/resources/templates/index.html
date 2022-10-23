@@ -79,6 +79,7 @@
             <th scope="col" class="text-center">#</th>
             <th scope="col" class="text-center">Name</th>
             <th scope="col" class="text-center">Created</th>
+            <th scope="col" class="text-center">User</th>
             <th scope="col" class="text-center">Done</th>
         </tr>
         </thead>
@@ -89,6 +90,7 @@
                 <a th:href="@{|/task/${task.id}|}" th:text="${task.name}" class="card-link"></a>
             </td>
             <td th:text="${#temporals.format(task.created, 'dd-MM-yyyy HH:mm')}" class="text-center"/>
+            <td th:text="${task.user != null} ? ${task.user.name} : 'null value!'" class="text-center"/>
             <td th:text="${task.done}" class="text-center"/>
         </tr>
         </tbody>

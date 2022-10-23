@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import ru.job4j.todo.model.Task;
+import ru.job4j.todo.model.User;
 import ru.job4j.todo.service.TaskService;
 import ru.job4j.todo.utilits.UserSession;
 
@@ -22,23 +23,26 @@ public class TaskController {
 
     @GetMapping("/addTask")
     public String addTask(Model model, HttpSession session) {
-        model.addAttribute("user", UserSession.user(session));
+        User currentUser = UserSession.user(session);
+        model.addAttribute("user", currentUser);
         model.addAttribute("task",
-                new Task(0, "Название", "Описание", LocalDateTime.now(), false));
+                new Task(0, "Название", "Описание", LocalDateTime.now(), false, currentUser));
         return "addTask";
     }
 
     @PostMapping("/createTask")
-    public String createTask(@ModelAttribute Task task) {
+    public String createTask(@ModelAttribute Task task, HttpSession session) {
         task.setCreated(LocalDateTime.now());
+        task.setUser(UserSession.user(session));
         taskService.add(task);
         return "redirect:/index";
     }
 
     @GetMapping("/completedTasksList")
     public String completedTasksList(Model model, HttpSession session) {
-        model.addAttribute("user", UserSession.user(session));
-        model.addAttribute("tasks", taskService.findCompleted());
+        User currentUser = UserSession.user(session);
+        model.addAttribute("user", currentUser);
+        model.addAttribute("tasks", taskService.findCompleted(currentUser));
         model.addAttribute("ALL", "false");
         model.addAttribute("COMPLETE", "true");
         model.addAttribute("NEWTask", "false");
@@ -47,8 +51,9 @@ public class TaskController {
 
     @GetMapping("/newTasksList")
     public String newTasksList(Model model, HttpSession session) {
-        model.addAttribute("user", UserSession.user(session));
-        model.addAttribute("tasks", taskService.findNew());
+        User currentUser = UserSession.user(session);
+        model.addAttribute("user", currentUser);
+        model.addAttribute("tasks", taskService.findNew(currentUser));
         model.addAttribute("ALL", "false");
         model.addAttribute("COMPLETE", "false");
         model.addAttribute("NEWTask", "true");

@@ -57,12 +57,14 @@
             <tr>
                 <th scope="col" class="text-center">Description</th>
                 <th scope="col" class="text-center">Created</th>
+                <th scope="col" class="text-center">Priority</th>
                 <th scope="col" class="text-center">Done</th>
             </tr>
             </thead>
             <tbody>
             <td th:text="${task.description}" class="text-center"/>
             <td th:text="${#temporals.format(task.created, 'dd-MM-yyyy HH:mm')}" class="text-center"/>
+            <td th:text="${task.priority != null} ? ${task.priority.name} : 'null value!'" class="text-center"/>
             <td th:text="${task.done}" class="text-center"/>
             </tbody>
         </table>

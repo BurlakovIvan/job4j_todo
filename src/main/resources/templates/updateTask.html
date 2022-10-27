@@ -54,6 +54,12 @@
                         <label for="description">Description</label>
                         <input type="text" class="form-control" name="description" id="description" th:field="*{description}">
                     </div>
+                    <div class="form-group">
+                        <label for="priority.id">Priority</label>
+                        <select class="form-control" id="priority.id" name="priority.id">
+                            <option th:each="priority : ${priorities}" th:value="${priority.id}" th:text="${priority.name}" th:selected="${priority.id==(task.priority != null ? task.priority.id : 0)}"></option>
+                        </select>
+                    </div>
                     <button type="submit" class="btn btn-primary">Update</button>
                 </form>
             </div>

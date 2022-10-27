@@ -3,7 +3,6 @@ CREATE TABLE if not exists tasks (
    name VARCHAR NOT NULL UNIQUE,
    description TEXT,
    created TIMESTAMP NOT NULL,
-   done BOOLEAN
+   done BOOLEAN,
+   user_id INT REFERENCES users(id)
 );
-
-ALTER TABLE tasks ADD user_id INT REFERENCES users(id)

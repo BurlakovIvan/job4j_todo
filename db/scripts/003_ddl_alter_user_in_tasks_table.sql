@@ -1,1 +1,0 @@
-ALTER TABLE tasks ADD user_id INT REFERENCES users(id)

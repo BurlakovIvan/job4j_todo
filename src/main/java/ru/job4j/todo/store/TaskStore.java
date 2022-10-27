@@ -15,15 +15,17 @@ import java.util.Map;
 public class TaskStore {
     private final CrudRepository crudRepository;
 
-    private final static String SELECT = "SELECT t FROM Task t WHERE user = :fUser";
+    private final static String SELECT = "SELECT t FROM Task t JOIN FETCH t.priority WHERE t.user = :fUser";
     private final static String UPDATE = "UPDATE Task %s WHERE id = :fId";
     private final static String DELETE = "DELETE Task WHERE id = :fId";
-    private final static String SELECT_TRUE_DONE = String.format("%s AND done = true", SELECT);
-    private final static String SELECT_FALSE_DONE = String.format("%s AND done = false", SELECT);
+    private final static String SELECT_TRUE_DONE = String.format("%s AND t.done = true", SELECT);
+    private final static String SELECT_FALSE_DONE = String.format("%s AND t.done = false", SELECT);
+    private final static String SELECT_BY_ID = "SELECT t FROM Task t JOIN FETCH t.priority WHERE t.id = :fId";
     private final static String UPDATE_COMPLETE = String.format(UPDATE, "SET done = :fDone");
     private final static String UPDATE_NAME = String.format(UPDATE, """
                                                        SET name = :fName,
-                                                       description = :fDescription
+                                                       description = :fDescription,
+                                                       priority = :fPriority
                                                        """);
 
     public void add(Task task) {
@@ -43,7 +45,7 @@ public class TaskStore {
     }
 
     public Task findById(int taskId) {
-        return crudRepository.tx(session -> session.get(Task.class, taskId));
+        return crudRepository.optional(SELECT_BY_ID, Task.class, Map.of("fId", taskId)).orElse(null);
     }
 
     public List<Task> find(String query, User user) {
@@ -68,6 +70,7 @@ public class TaskStore {
             crudRepository.run(UPDATE_NAME,
                     Map.of("fName", task.getName(),
                             "fDescription", task.getDescription(),
+                            "fPriority", task.getPriority(),
                             "fId", task.getId()));
         } catch (Exception e) {
             rsl = false;

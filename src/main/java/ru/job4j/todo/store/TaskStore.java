@@ -3,11 +3,13 @@ package ru.job4j.todo.store;
 import lombok.AllArgsConstructor;
 import net.jcip.annotations.ThreadSafe;
 import org.springframework.stereotype.Repository;
+import ru.job4j.todo.model.Category;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.model.User;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @ThreadSafe
 @Repository
@@ -15,7 +17,11 @@ import java.util.Map;
 public class TaskStore {
     private final CrudRepository crudRepository;
 
-    private final static String SELECT = "SELECT t FROM Task t JOIN FETCH t.priority WHERE t.user = :fUser";
+    private final static String SELECT = """
+                                         SELECT t FROM Task t
+                                         JOIN FETCH t.priority
+                                         WHERE t.user = :fUser
+                                         """;
     private final static String UPDATE = "UPDATE Task %s WHERE id = :fId";
     private final static String DELETE = "DELETE Task WHERE id = :fId";
     private final static String SELECT_TRUE_DONE = String.format("%s AND t.done = true", SELECT);

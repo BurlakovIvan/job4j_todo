@@ -1,41 +1,49 @@
 package ru.job4j.todo.controller;
 
 import lombok.AllArgsConstructor;
+import net.jcip.annotations.ThreadSafe;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import ru.job4j.todo.model.Category;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.model.User;
+import ru.job4j.todo.service.CategoryService;
 import ru.job4j.todo.service.PriorityService;
 import ru.job4j.todo.service.TaskService;
 import ru.job4j.todo.utilits.UserSession;
 
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Controller
 @AllArgsConstructor
+@ThreadSafe
 public class TaskController {
 
     public TaskService taskService;
-
     public PriorityService priorityService;
+    public CategoryService categoryService;
 
     @GetMapping("/addTask")
     public String addTask(Model model, HttpSession session) {
         User currentUser = UserSession.user(session);
         model.addAttribute("user", currentUser);
         model.addAttribute("priorities", priorityService.findAll());
-        model.addAttribute("task",
-                new Task(0, "Название", "Описание", LocalDateTime.now(), false, currentUser, null));
+        model.addAttribute("task", new Task());
+        model.addAttribute("categories", categoryService.findAll());
         return "addTask";
     }
 
     @PostMapping("/createTask")
     public String createTask(@ModelAttribute Task task, @RequestParam("priority.id") int priorityId,
+                             @RequestParam(name = "categoryId", required = false)
+                             List<Integer> categoriesId,
                              HttpSession session) {
         task.setCreated(LocalDateTime.now());
         task.setPriority(priorityService.findById(priorityId));
+        task.setCategories(categoryService.findByIds(categoriesId));
         task.setUser(UserSession.user(session));
         taskService.add(task);
         return "redirect:/index";

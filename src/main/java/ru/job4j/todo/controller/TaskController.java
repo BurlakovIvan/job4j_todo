@@ -97,22 +97,30 @@ public class TaskController {
     }
 
     @GetMapping("/update/{taskID}")
-    public String update(Model model, HttpSession session, @PathVariable("taskID") int taskID) {
+    public String update(Model model, HttpSession session,
+                         @PathVariable("taskID") int taskID) {
         model.addAttribute("task", taskService.findById(taskID));
         model.addAttribute("user", UserSession.user(session));
         model.addAttribute("priorities", priorityService.findAll());
+        model.addAttribute("categories", categoryService.findAll());
         return "updateTask";
     }
 
     @PostMapping("/updateTask")
-    public String updateTask(Model model, HttpSession session, @RequestParam("priority.id") int priorityId,
-                             @ModelAttribute Task task) {
+    public String updateTask(Model model, HttpSession session,
+                             @RequestParam("priority.id") int priorityId,
+                             @ModelAttribute Task task,
+                             @RequestParam(name = "categoryId", required = false)
+                                 List<Integer> categoriesId) {
+        var currentUser = UserSession.user(session);
         task.setPriority(priorityService.findById(priorityId));
+        task.setCategories(categoryService.findByIds(categoriesId));
+        task.setUser(currentUser);
         var rsl = taskService.update(task);
         if (rsl) {
             return String.format("redirect:/task/%s", task.getId());
         }
-        model.addAttribute("user", UserSession.user(session));
+        model.addAttribute("user", currentUser);
         model.addAttribute("message", "ERROR");
         return "condition";
     }

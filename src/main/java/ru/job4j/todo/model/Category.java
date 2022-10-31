@@ -15,4 +15,9 @@ public class Category {
     @EqualsAndHashCode.Include
     private int id;
     private String name;
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

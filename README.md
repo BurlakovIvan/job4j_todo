@@ -49,6 +49,6 @@ mvn spring-boot:run
 9. _Окно подробно (задача выполнена):_
 ![img.png](src/img/CompletedTask.png)
 10. _Окно подробно (задача не выполнена):_
-![img.png](src/img/NewTask.png)
+![img_1.png](src/img/NewTask.png)
 11. _Окно редактирования задачи:_
 ![img.png](src/img/UpdateTask.png)

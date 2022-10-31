@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.job4j.todo.model.User;
+import ru.job4j.todo.service.TimeZoneService;
 import ru.job4j.todo.service.UserService;
 import ru.job4j.todo.utilits.UserSession;
 
@@ -24,10 +25,12 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
+    private final TimeZoneService timeZoneService;
 
     @GetMapping("/formAddUser")
     public String addUser(Model model, HttpSession session) {
         model.addAttribute("user", UserSession.user(session));
+        model.addAttribute("timeZones", timeZoneService.findAll());
         return "addUser";
     }
 
@@ -50,7 +53,7 @@ public class UserController {
     }
 
     @PostMapping("/failRedirect")
-    public String failRedirect(Model model) {
+    public String failRedirect() {
         return "redirect:/formAddUser";
     }
 

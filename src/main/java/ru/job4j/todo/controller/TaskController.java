@@ -10,6 +10,7 @@ import ru.job4j.todo.model.User;
 import ru.job4j.todo.service.CategoryService;
 import ru.job4j.todo.service.PriorityService;
 import ru.job4j.todo.service.TaskService;
+import ru.job4j.todo.service.TimeZoneService;
 import ru.job4j.todo.utilits.UserSession;
 
 import javax.servlet.http.HttpSession;
@@ -25,6 +26,7 @@ public class TaskController {
     public TaskService taskService;
     public PriorityService priorityService;
     public CategoryService categoryService;
+    public TimeZoneService timeZoneService;
 
     @GetMapping("/addTask")
     public String addTask(Model model, HttpSession session) {
@@ -41,18 +43,30 @@ public class TaskController {
                              @RequestParam(name = "categoryId", required = false)
                              List<Integer> categoriesId,
                              HttpSession session) {
-        int currentUserTimeZone = UserSession.user(session).getTimeZone();
-        String timeZone = currentUserTimeZone == 0 ? "" : currentUserTimeZone > 0
-                ?  String.format("+%s", currentUserTimeZone)
-                : Integer.toString(currentUserTimeZone);
+        var currentUserTimeZone = UserSession.user(session).getTimeZone();
         var time = LocalDateTime.now().atZone(
-                ZoneId.of(String.format("UTC%s", timeZone))
+                ZoneId.of(String.format("UTC%s", currentUserTimeZone.getUtcOffset()))
         ).toLocalDateTime();
         task.setCreated(time);
         task.setPriority(priorityService.findById(priorityId));
         task.setCategories(categoryService.findByIds(categoriesId));
         task.setUser(UserSession.user(session));
-        taskService.add(task);
+        var regUser = taskService.add(task);
+        if (regUser) {
+            return "redirect:/index";
+        }
+        return "redirect:/failSave";
+    }
+
+    @GetMapping("/failSave")
+    public String failSave(Model model, HttpSession session) {
+        model.addAttribute("user", UserSession.user(session));
+        model.addAttribute("message", "Задача с таким именем уже существует");
+        return "failSave";
+    }
+
+    @PostMapping("/failRedirectSave")
+    public String failRedirectSave() {
         return "redirect:/index";
     }
 

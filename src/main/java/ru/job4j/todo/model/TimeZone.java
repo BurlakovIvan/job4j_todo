@@ -9,19 +9,16 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name = "users")
+@Table(name = "timezones")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class TimeZone {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private int id;
     private String name;
-    private String login;
-    private String password;
-    @ManyToOne()
-    @JoinColumn(name = "timezone_id")
-    private TimeZone timeZone;
+    @Column(name = "utc_offset")
+    private String utcOffset;
 }

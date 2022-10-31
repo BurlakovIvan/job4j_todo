@@ -33,8 +33,14 @@ public class TaskStore {
                                                """;
     private final static String UPDATE_COMPLETE = String.format(UPDATE, "SET done = :fDone");
 
-    public void add(Task task) {
-        crudRepository.run(session -> session.save(task));
+    public boolean add(Task task) {
+        boolean rsl = true;
+        try {
+            crudRepository.run(session -> session.save(task));
+        } catch (Exception e) {
+            rsl = false;
+        }
+        return rsl;
     }
 
     public List<Task> findAll(User user) {

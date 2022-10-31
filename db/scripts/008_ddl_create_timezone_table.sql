@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS timezones (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR,
+    utc_offset VARCHAR UNIQUE
+)

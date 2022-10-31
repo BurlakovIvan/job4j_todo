@@ -1,0 +1,1 @@
+ALTER TABLE users ADD COLUMN timezone_id int REFERENCES timezones(id);
